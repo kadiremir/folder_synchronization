@@ -1,1 +1,2 @@
-# folder_synchronization
+# Folder Synchronization
+Kadir Emir
