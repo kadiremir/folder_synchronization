@@ -22,12 +22,9 @@ def synchronization():
     log_file_path = sys.argv[3]
     interval = int(sys.argv[4])
 
+    logging.basicConfig(filename=os.path.join(log_file_path, "log.txt"), level=logging.INFO)
+
     while True:
-
-        now = datetime.now()
-        now_string = now.strftime("%d_%m_%Y_%H_%M_%S")
-
-        logging.basicConfig(filename=os.path.join(log_file_path, "log.txt"), level=logging.INFO)
 
         # Here we check the directory paths of replica. If a directory does not exist in source, we are delete the directory (with its contents).
         for dirpath, dirnames, filenames in os.walk(replica_folder_path):
@@ -35,7 +32,7 @@ def synchronization():
             source_directories_to_check = os.path.join(source_folder_path, dirpath[len(replica_folder_path):]).replace("\\", "/")
 
             if not os.path.isdir(source_directories_to_check):
-                logging.info(f'Directory does not exist in source anymore, and it is deleted: {dirpath}')
+                logging.info(f'{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}: Directory does not exist in source anymore, and it is deleted: {dirpath}')
                 shutil.rmtree(dirpath)
 
         # Here we check the files of replica. If a file does not exist in source, we delete it.
@@ -45,7 +42,7 @@ def synchronization():
                 item_path_in_replica = os.path.join(dirpath, item).replace("\\", "/")
                 source_filename_to_check = os.path.join(source_folder_path, item_path_in_replica[len(replica_folder_path):])
                 if not os.path.isfile(source_filename_to_check):
-                    logging.info(f'File does not exist in source anymore, and it is deleted: {item_path_in_replica}')
+                    logging.info(f'{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}: File does not exist in source anymore, and it is deleted: {item_path_in_replica}')
                     os.remove(item_path_in_replica)
                 # print(source_filename_to_check)
 
@@ -55,7 +52,7 @@ def synchronization():
             replica_directories_to_check = os.path.join(replica_folder_path, dirpath[len(source_folder_path):]).replace("\\", "/")
 
             if not os.path.isdir(replica_directories_to_check):
-                logging.info(f'Directory does not exist in replica, and it is created: {replica_directories_to_check}')
+                logging.info(f'{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}: Directory does not exist in replica, and it is created: {replica_directories_to_check}')
                 os.mkdir(replica_directories_to_check)
 
         # Here we check the files of source. If a file:
@@ -68,7 +65,7 @@ def synchronization():
                 replica_filename_to_check = os.path.join(replica_folder_path, item_path_in_source[len(source_folder_path):])
 
                 if not os.path.isfile(replica_filename_to_check):
-                    logging.info(f'File does not exist in replica, and copied: {item_path_in_source}')
+                    logging.info(f'{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}: File does not exist in replica, and copied: {item_path_in_source}')
                     shutil.copyfile(item_path_in_source, replica_filename_to_check)
 
                 else:
@@ -79,7 +76,7 @@ def synchronization():
                         target_file_hexdigest = hashlib.md5(t.read()).hexdigest()
 
                     if not source_file_hexdigest == target_file_hexdigest:
-                        logging.info(f'File changed, and it is updated: {item_path_in_source}')
+                        logging.info(f'{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}: File changed, and it is updated: {item_path_in_source}')
                         os.remove(replica_filename_to_check)
                         shutil.copyfile(item_path_in_source, replica_filename_to_check)
 
